@@ -54,6 +54,10 @@ class Configuration extends HashMap {
 
     public Configuration(Reader reader) throws ConfigurationException, IOException {
         super(loadProperties(reader));
+        String className = (String) get("");
+        if (!className.equals(getClass().getName())) {
+            throw new ConfigurationException("Configuration class name mismatch: " + className);
+        }
         parseProperties();
         init();
         link();
@@ -84,11 +88,11 @@ class Configuration extends HashMap {
                     List list = Arrays.asList(string.split(","));
                     for (int i = 0; i < list.size(); i++) {
                         object = parseString(((String) list.get(i)).trim(), null);
-                        if (object instanceof String) {
-                            list.set(i, new Link((String) object));
-                        } else {
+                        //if (object instanceof String) {
+                        //    list.set(i, new Link((String) object));
+                        //} else {
                             list.set(i, object);
-                        }
+                        //}
                     }
                     return list;
                 } else if (string.startsWith("class ")) {
