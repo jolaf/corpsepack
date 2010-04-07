@@ -1,0 +1,40 @@
+# AngelCode Bitmap Font Generator configuration file
+fileVersion=1
+
+# font settings
+fontName=Verdana
+charSet=204
+fontSize=12
+aa=1
+scaleH=100
+useSmoothing=1
+isBold=0
+isItalic=0
+useUnicode=0
+disableBoxChars=1
+
+# character alignment
+paddingDown=0
+paddingUp=0
+paddingRight=0
+paddingLeft=0
+spacingHoriz=1
+spacingVert=1
+
+# output file
+outWidth=96
+outHeight=96
+outBitDepth=8
+fontDescFormat=2
+fourChnlPacked=0
+textureFormat=png
+textureCompression=0
+
+# outline
+outlineThickness=0
+is1ChnlEncoded=0
+
+# selected chars
+chars=32-126,133-137,139,149-151,153,155,164,167-169,171,174,176-177,182-185,187,192-255
+
+# imported icon images
