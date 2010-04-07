@@ -3,6 +3,6 @@
 <active.build.cfg active="Release"/>
 <target-profile device="Emulator" vendor="MobileSorcery"/>
 <properties>
-<property key="last.build.config" value="Release"/>
+<property key="last.build.config" value="Debug"/>
 </properties>
 </project>
