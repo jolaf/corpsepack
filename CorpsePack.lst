@@ -5,3 +5,7 @@
 .res PRETTY_FONT
 .bin
 .include "Pretty.mof"
+
+.res DRAWING_CONTEXT
+.bin
+.word CORPSE_PACK_FONT, CORPSE_PACK_FONT, 0
