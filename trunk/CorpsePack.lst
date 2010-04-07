@@ -1,0 +1,7 @@
+.res CORPSE_PACK_FONT
+.bin
+.include "CorpsePack.mof"
+
+.res PRETTY_FONT
+.bin
+.include "Pretty.mof"
