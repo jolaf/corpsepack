@@ -1,11 +1,27 @@
-.res CORPSE_PACK_FONT
-.bin
-.include "CorpsePack.mof"
-
 .res PRETTY_FONT
 .bin
 .include "Pretty.mof"
 
-.res DRAWING_CONTEXT
+.res SELECTED_FONT
 .bin
-.word CORPSE_PACK_FONT, CORPSE_PACK_FONT, 0
+.include "Arial12b-white.mof"
+
+.res UNSELECTED_FONT
+.bin
+.include "Arial12b-black.mof"
+
+.res SELECTED_SKIN
+.image "skin_.png"
+
+.res UNSELECTED_SKIN
+.image "skin.png"
+
+.res CONTEXT
+.bin
+.word SELECTED_FONT, UNSELECTED_FONT, 0x000000, 0xffffff, UNSELECTED_SKIN, UNSELECTED_SKIN
+.byte 1, 2, 1, 2 // Skin separators
+.byte 2, 4, 2, 4 // Padding
+
+.res HELP_TEXT
+.bin
+.include "Help.txt"
