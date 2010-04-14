@@ -1,3 +1,4 @@
+#include <matime.h>
 #include <mavsprintf.h>
 #include <MAUtil/util.h>
 #include <MAUtil/Environment.h>
@@ -13,79 +14,120 @@
 using namespace MAUtil;
 using namespace MAUI;
 
-/*
- * Key reference:
- *
- * L Help (displays this info until key is released)
- * R exit
- *
- * 1
- * 2
- * 3 Status (displays character status until key is released)
- *
- * 4 Wound (displays location menu, produces events)
- * 5 Event (provides form for event code entering)
- * 6 (other special event?)
- *
- * 7
- * 8
- * 9
- *
- * *
- * 0
- * #
- */
+#define MAX(a, b) (a >= b ? a : b)
 
-#define POPUP_STATES 10
+String& getString(MAHandle stringResource) {
+	int length = maGetDataSize(stringResource);
+	String* output;
+	if (length) {
+		char* buffer = new char[length + 1];
+		maReadData(stringResource, buffer, 0, length);
+		buffer[length] = '\x00';
+		output = new String(buffer);
+		delete[] buffer;
+	} else {
+		output = new String();
+	}
+	return *output;
+}
 
-class DrawingContext {
+class Context {
 public:
-    Font* mainFont;
-    Font* boldFont;
-    int backgroundColor;
+    Font* selectedFont;
+    Font* unselectedFont;
+    int selectedBackgroundColor;
+    int unselectedBackgroundColor;
+    byte paddingLeft;
+    byte paddingRight;
+    byte paddingTop;
+    byte paddingBottom;
+    byte lineHeight;
+    byte paddedLineHeight;
+    WidgetSkin* skin;
 
-    DrawingContext(MAHandle resourceID) {
+    Context(MAHandle resourceID) {
         int i;
         int position = 0;
         maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        this->mainFont = new Font(i);
+        selectedFont = new Font(i);
         maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        this->boldFont = new Font(i);
+        unselectedFont = new Font(i);
         maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        backgroundColor = i;
+        selectedBackgroundColor = i;
+        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
+        unselectedBackgroundColor = i;
+        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
+        MAHandle selectedSkin = i;
+        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
+        MAHandle unselectedSkin = i;
+        byte b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        byte x1 = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        byte x2 = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        byte y1 = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        byte y2 = b;
+        skin = new WidgetSkin(selectedSkin, unselectedSkin, x1, x2, y1, y2, true, true);
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        paddingTop = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        paddingRight = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        paddingBottom = b;
+        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
+        paddingLeft = b;
+        lineHeight = MAX(EXTENT_Y(selectedFont->getStringDimensions("M")), EXTENT_Y(unselectedFont->getStringDimensions("M")));
+        paddedLineHeight = lineHeight + paddingTop + paddingBottom;
     }
 
-    DrawingContext(MAHandle mainFontResource, MAHandle boldFontResource, int backgroundColor) {
-        this->mainFont = new Font(mainFontResource);
-        this->boldFont = new Font(boldFontResource);
-        this->backgroundColor = backgroundColor;
+    ~Context() {
+    	delete selectedFont;
+    	delete unselectedFont;
+    	delete skin;
+    }
+
+    void setSkinTo(Widget* widget) {
+    	widget->setBackgroundColor(unselectedBackgroundColor);
+    	widget->setSkin(skin);
+    	widget->setPaddingLeft(paddingLeft);
+    	widget->setPaddingRight(paddingRight);
+    	widget->setPaddingTop(paddingTop);
+    	widget->setPaddingBottom(paddingBottom);
     }
 };
 
-#define POPUP_PADDING 10
-
-Font* defaultFont = new Font(CORPSE_PACK_FONT);
+Context* context = new Context(CONTEXT);
+String& helpText = getString(HELP_TEXT);
 
 class PopUp : public ListBox {
 protected:
 	int keyCode;
 
 public:
-	PopUp(const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
-			: ListBox(POPUP_PADDING, POPUP_PADDING, EXTENT_X(maGetScrSize()) - 2 * POPUP_PADDING, EXTENT_Y(maGetScrSize()) - 2 * POPUP_PADDING, NULL, ListBox::LBO_VERTICAL) {
+	PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
+			: ListBox(0, 0, parent->getWidth(), parent->getHeight(), NULL, ListBox::LBO_VERTICAL) {
 		this->keyCode = keyCode;
-		Label* content = new Label(0, 0, getWidth(), 0, this);
-		content->setMultiLine();
-		content->setFont(defaultFont);
-		content->setCaption(caption);
-		content->setAutoSizeY(true);
+		Label* title = new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
+		title->setHorizontalAlignment(Label::HA_CENTER);
+		context->setSkinTo(title);
+		Layout* menu = NULL;
 		if (numButtons > 0) {
-			Layout* buttons = new Layout(0, 0, getWidth(), 10, this, numButtons, 1);
+			menu = new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
+			context->setSkinTo(menu);
 			for (int i = 0; i < numButtons; i++) {
-				Label* button = new Label(0, 0, 0, 0, buttons, buttonCaptions[i], 0x000080, defaultFont);
-				button->setAutoSizeX(true);
-				button->setAutoSizeY(true);
+				Label* button = new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
+				button->setHorizontalAlignment((i > 0 && i < numButtons - 1) ? Label::HA_CENTER : (i == 0) ? Label::HA_LEFT : Label::HA_RIGHT);
 			}
+		}
+		Label* content = new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
+		content->setMultiLine();
+		context->setSkinTo(content);
+		add(title);
+		add(content);
+		if (menu) {
+			add(menu);
 		}
 		Engine::getSingleton().showOverlay(0, 0, this);
 	}
@@ -109,9 +151,6 @@ public:
 class CorpsePackScreen : public Screen {
 protected:
 	Moblet* moblet;
-    DrawingContext* drawingContext;
-    int screenWidth;
-    int screenHeight;
     Widget* main;
     Label* header;
     ListBox* content;
@@ -122,28 +161,23 @@ protected:
 	enum States { MAIN, POPUP_GROWING, POPUP, POPUP_SHRINKING } state;
 
 public:
-    CorpsePackScreen(Moblet* moblet, DrawingContext* drawingContext) {
+    CorpsePackScreen(Moblet* moblet) {
     	lprintfln("# Started");
     	this->moblet = moblet;
-        this->drawingContext = drawingContext;
         MAExtent screenSize = maGetScrSize();
-        screenWidth = EXTENT_X(screenSize);
-        screenHeight = EXTENT_Y(screenSize);
-        Layout* layout = new Layout(0, 0, screenWidth, screenHeight, NULL, 1, 3);
+        Layout* layout = new Layout(0, 0, EXTENT_X(screenSize), EXTENT_Y(screenSize), NULL, 1, 3);
 
-        const char* title = "CorpsePack v0.1  ËÄÇ: ÂÀÐìèÿ";
-        int labelHeight = EXTENT_Y(drawingContext->boldFont->getStringDimensions(title)) + 1;
-        header = new Label(0, 0, screenWidth, labelHeight, NULL, title, 0xff0000 /*drawingContext->backgroundColor*/, drawingContext->boldFont);
-
-        footer = new Layout(0, 0, screenWidth, labelHeight, NULL, 2, 1);
-        leftSoftButton = new Label(0,0, screenWidth / 2, labelHeight, footer, "Help", 0xff0000, drawingContext->boldFont);
+        // sprintf(title, "%d/%d %d %d%%", maFreeObjectMemory(), maTotalObjectMemory(), split_time(maLocalTime(), new tm())->tm_sec, maGetBatteryCharge());
+        header = new Label(0, 0, layout->getWidth(), context->paddedLineHeight, NULL, "CorpsePack v0.1  ËÄÇ: ÂÀÐìèÿ", context->unselectedBackgroundColor, context->unselectedFont);
+        context->setSkinTo(header);
+        footer = new Layout(0, 0, layout->getWidth(), context->paddedLineHeight, NULL, 2, 1);
+        context->setSkinTo(footer);
+        leftSoftButton = new Label(0, 0, footer->getPaddedBounds().width / 2, context->lineHeight, footer, "Help", context->unselectedBackgroundColor, context->unselectedFont);
         leftSoftButton->setHorizontalAlignment(Label::HA_LEFT);
-        leftSoftButton->setPaddingLeft(EXTENT_X(drawingContext->boldFont->getStringDimensions("M")));
-        rightSoftButton = new Label(0,0, screenWidth / 2, labelHeight, footer, "Exit", 0xff0000, drawingContext->boldFont);
+        rightSoftButton = new Label(0, 0, footer->getPaddedBounds().width / 2, context->lineHeight, footer, "Exit", context->unselectedBackgroundColor, context->unselectedFont);
         rightSoftButton->setHorizontalAlignment(Label::HA_RIGHT);
-        rightSoftButton->setPaddingRight(EXTENT_X(drawingContext->boldFont->getStringDimensions("M")));
 
-        content = new ListBox(0, 0, screenWidth, screenHeight - header->getHeight() - footer->getHeight(), NULL, ListBox::LBO_VERTICAL, ListBox::LBA_LINEAR, false);
+        content = new ListBox(0, 0, layout->getWidth(), layout->getHeight() - header->getHeight() - footer->getHeight(), NULL, ListBox::LBO_VERTICAL, ListBox::LBA_LINEAR, false);
         content->setBackgroundColor(0xffffff);
         layout->add(header);
         layout->add(content);
@@ -166,7 +200,7 @@ public:
 			String buttons[] = {"Yes", "No", "Help"};
 			switch(keyCode) {
 			case MAK_SOFTLEFT:
-				popup = new PopUp("Help!", MAK_SOFTLEFT, 3, buttons);
+				popup = new PopUp(main, "Help", helpText, MAK_SOFTLEFT, 3, buttons);
 				break;
 			case MAK_SOFTRIGHT:
 				if (state == MAIN) {
@@ -212,7 +246,7 @@ private:
     CorpsePackScreen* screen;
 public:
     CorpsePackMoblet() {
-        screen = new CorpsePackScreen(this, new DrawingContext(DRAWING_CONTEXT));
+        screen = new CorpsePackScreen(this);
         screen->show();
     }
 
