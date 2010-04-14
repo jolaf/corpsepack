@@ -16,6 +16,8 @@
 <property key="build.prefs:extra.res.sw/Release" value=""/>
 <property key="build.prefs:gcc.warnings/Debug" value="0"/>
 <property key="build.prefs:gcc.warnings/Release" value="0"/>
+<property key="build.prefs:memory.heap/Debug" value="32"/>
+<property key="build.prefs:memory.heap/Release" value="32"/>
 <property key="build.prefs:project.type" value=""/>
 <property key="dependency.strategy" value="1"/>
 <property key="symbian.uids:uid.s60v2uid" value="0x0c26dbd8"/>

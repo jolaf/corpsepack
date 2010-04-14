@@ -1,5 +1,6 @@
-#include <conprint.h>
+#include <mavsprintf.h>
 #include <MAUtil/util.h>
+#include <MAUtil/Environment.h>
 #include <MAUtil/Moblet.h>
 #include <MAUI/Engine.h>
 #include <MAUI/Font.h>
@@ -35,6 +36,8 @@ using namespace MAUI;
  * #
  */
 
+#define POPUP_STATES 10
+
 class DrawingContext {
 public:
     Font* mainFont;
@@ -59,24 +62,73 @@ public:
     }
 };
 
+#define POPUP_PADDING 10
+
+Font* defaultFont = new Font(CORPSE_PACK_FONT);
+
+class PopUp : public ListBox {
+protected:
+	int keyCode;
+
+public:
+	PopUp(const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
+			: ListBox(POPUP_PADDING, POPUP_PADDING, EXTENT_X(maGetScrSize()) - 2 * POPUP_PADDING, EXTENT_Y(maGetScrSize()) - 2 * POPUP_PADDING, NULL, ListBox::LBO_VERTICAL) {
+		this->keyCode = keyCode;
+		Label* content = new Label(0, 0, getWidth(), 0, this);
+		content->setMultiLine();
+		content->setFont(defaultFont);
+		content->setCaption(caption);
+		content->setAutoSizeY(true);
+		if (numButtons > 0) {
+			Layout* buttons = new Layout(0, 0, getWidth(), 10, this, numButtons, 1);
+			for (int i = 0; i < numButtons; i++) {
+				Label* button = new Label(0, 0, 0, 0, buttons, buttonCaptions[i], 0x000080, defaultFont);
+				button->setAutoSizeX(true);
+				button->setAutoSizeY(true);
+			}
+		}
+		Engine::getSingleton().showOverlay(0, 0, this);
+	}
+
+	virtual ~PopUp() {
+		Engine::getSingleton().hideOverlay();
+	}
+
+	int processKeyPress(int keyCode) {
+		return 0; // ToDo
+	}
+
+	int processKeyRelease(int keyCode) {
+		if (this->keyCode && keyCode == this->keyCode) {
+			return 1;
+		}
+		return 0;
+	}
+};
+
 class CorpsePackScreen : public Screen {
-private:
+protected:
+	Moblet* moblet;
+    DrawingContext* drawingContext;
+    int screenWidth;
+    int screenHeight;
     Widget* main;
     Label* header;
     ListBox* content;
     Layout* footer;
     Label* leftSoftButton;
     Label* rightSoftButton;
-	enum States { MAIN, POPUP, EVENT } state;
+    PopUp* popup;
+	enum States { MAIN, POPUP_GROWING, POPUP, POPUP_SHRINKING } state;
 
 public:
-    DrawingContext* drawingContext;
-
-    CorpsePackScreen(DrawingContext* drawingContext) {
+    CorpsePackScreen(Moblet* moblet, DrawingContext* drawingContext) {
+    	lprintfln("# Started");
+    	this->moblet = moblet;
         this->drawingContext = drawingContext;
         MAExtent screenSize = maGetScrSize();
-        int screenWidth = EXTENT_X(screenSize);
-        int screenHeight = EXTENT_Y(screenSize);
+        screenWidth = EXTENT_X(screenSize);
+        screenHeight = EXTENT_Y(screenSize);
         Layout* layout = new Layout(0, 0, screenWidth, screenHeight, NULL, 1, 3);
 
         const char* title = "CorpsePack v0.1  ËÄÇ: ÂÀÐìèÿ";
@@ -96,6 +148,7 @@ public:
         layout->add(header);
         layout->add(content);
         layout->add(footer);
+        popup = NULL;
         main = layout;
         setMain(main);
         state = MAIN;
@@ -106,31 +159,51 @@ public:
     }
 
     void keyPressEvent(int keyCode) {
-        switch(keyCode) {
-        case MAK_SOFTLEFT:
-        case MAK_SOFTRIGHT:
-        	if (state == MAIN) {
-        		state = POPUP;
-        	}
-        case MAK_DOWN:
-        	if (state == MAIN) {
-        		content->selectNextItem(true);
-        	}
-            break;
-        case MAK_UP:
-        	if (state == MAIN) {
-        		content->selectPreviousItem(true);
-        	}
-            break;
-        }
+    	lprintfln("Pressed %d", keyCode);
+    	if (popup && popup->processKeyPress(keyCode)) {
+    		delete popup;
+    	} else {
+			String buttons[] = {"Yes", "No", "Help"};
+			switch(keyCode) {
+			case MAK_SOFTLEFT:
+				popup = new PopUp("Help!", MAK_SOFTLEFT, 3, buttons);
+				break;
+			case MAK_SOFTRIGHT:
+				if (state == MAIN) {
+					state = POPUP;
+				}
+				break;
+			case MAK_DOWN:
+				if (state == MAIN) {
+					content->selectNextItem(true);
+				}
+				break;
+			case MAK_UP:
+				if (state == MAIN) {
+					content->selectPreviousItem(true);
+				}
+				break;
+			}
+    	}
         maUpdateScreen();
     }
 
     void keyReleaseEvent(int keyCode) {
-    	if (state == POPUP) {
-    		state = MAIN;
+    	lprintfln("Released %d", keyCode);
+    	if (popup && popup->processKeyRelease(keyCode)) {
+    		delete popup;
+    	} else {
+			switch(keyCode) {
+			case MAK_SOFTLEFT:
+				// if (we're in help) {
+				break;
+			case MAK_SOFTRIGHT:
+				// Shutdown, context should have already been saved in RMS
+				moblet->closeEvent(); // calls close();
+				break;
+			}
+			maUpdateScreen();
     	}
-        maUpdateScreen();
     }
 };
 
@@ -139,19 +212,12 @@ private:
     CorpsePackScreen* screen;
 public:
     CorpsePackMoblet() {
-        screen = new CorpsePackScreen(new DrawingContext(DRAWING_CONTEXT));
+        screen = new CorpsePackScreen(this, new DrawingContext(DRAWING_CONTEXT));
         screen->show();
     }
 
     ~CorpsePackMoblet() {
         delete screen;
-    }
-
-    void keyReleaseEvent(int keyCode) {
-    	screen->keyReleaseEvent(keyCode);
-		if (keyCode == MAK_SOFTRIGHT) {
-			closeEvent(); // calls close();
-		}
     }
 };
 
