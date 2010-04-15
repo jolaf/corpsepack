@@ -1,5 +1,6 @@
 #include <matime.h>
 #include <mavsprintf.h>
+#include <maxtoa.h>
 #include <MAUtil/util.h>
 #include <MAUtil/Environment.h>
 #include <MAUtil/Moblet.h>
@@ -14,21 +15,57 @@
 using namespace MAUtil;
 using namespace MAUI;
 
-#define MAX(a, b) (a >= b ? a : b)
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MOD(x) ((x >= 0) ? (x) : (-x))
+#define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
 
 String& getString(MAHandle stringResource) {
 	int length = maGetDataSize(stringResource);
 	String* output;
 	if (length) {
-		char* buffer = new char[length + 1];
+		char buffer[length + 1];
 		maReadData(stringResource, buffer, 0, length);
 		buffer[length] = '\x00';
 		output = new String(buffer);
-		delete[] buffer;
 	} else {
 		output = new String();
 	}
 	return *output;
+}
+
+#define GREEK_SIZES " KMGT"
+#define GREEK_SIZES_NUM 4
+
+String greekSize(int value) {
+	char buffer[8];
+	int a = MOD(value);
+	if (a < 1024) {
+		itoa(value, buffer, 10);
+	} else {
+		char* p = GREEK_SIZES;
+		if (a > 2147483135) {
+			a -= 512;
+		}
+		int b;
+		do {
+			b = a;
+			a = (a + 512) / 1024;
+			p++;
+		} while (a);
+		if (value < 0) {
+			b = -b;
+		}
+		sprintf(buffer, "%d%c", b, *p);
+	}
+	return String(buffer);
+}
+
+char* justTime() {
+	char* date = sprint_time(maLocalTime());
+	date = date + (strlen(date) - 13);
+	date[8] = '\x00';
+	return date;
 }
 
 class Context {
@@ -129,11 +166,6 @@ public:
 		if (menu) {
 			add(menu);
 		}
-		Engine::getSingleton().showOverlay(0, 0, this);
-	}
-
-	virtual ~PopUp() {
-		Engine::getSingleton().hideOverlay();
 	}
 
 	int processKeyPress(int keyCode) {
@@ -148,7 +180,52 @@ public:
 	}
 };
 
-class CorpsePackScreen : public Screen {
+class ProgressBar : public Widget {
+public:
+	enum Direction { LEFT_TO_RIGHT, RIGHT_TO_LEFT };
+
+protected:
+	int percentage;
+	Direction direction;
+	Label* empty;
+	Label* full;
+
+	void updateContents() {
+		int fullWidth = (paddedBounds.width * percentage) / 100;
+		int emptyWidth = paddedBounds.width - fullWidth;
+		empty->setPosition(direction == LEFT_TO_RIGHT ? fullWidth : 0, 0);
+		empty->setWidth(emptyWidth);
+		empty->setHeight(paddedBounds.height);
+		full->setPosition(direction == RIGHT_TO_LEFT ? emptyWidth : 0, 0);
+		full->setWidth(fullWidth);
+		full->setHeight(paddedBounds.height);
+	}
+
+public:
+	ProgressBar(int x, int y, int width, int height, Widget* parent = NULL, int emptyColor = 0xffffff, int fullColor = 0x000000, Direction direction = LEFT_TO_RIGHT, int initialPercentage = 0)
+			: Widget(x, y, width, height, parent), direction(direction), percentage(initialPercentage) {
+		empty = new Label(0, 0, 0, 0, this);
+		empty->setBackgroundColor(emptyColor);
+		full = new Label(0, 0, 0, 0, this);
+		full->setBackgroundColor(fullColor);
+		updateContents();
+	}
+
+	int getPercentage() {
+		return percentage;
+	}
+
+	void setPercentage(int percentage) {
+		this->percentage = percentage;
+	}
+
+	void drawWidget() {
+		updateContents();
+		Widget::update();
+	}
+};
+
+class CorpsePackScreen : public Screen, TimerListener {
 protected:
 	Moblet* moblet;
     Widget* main;
@@ -158,6 +235,8 @@ protected:
     Label* leftSoftButton;
     Label* rightSoftButton;
     PopUp* popup;
+    PopUp* helpPopUp;
+    Engine* engine;
 	enum States { MAIN, POPUP_GROWING, POPUP, POPUP_SHRINKING } state;
 
 public:
@@ -167,7 +246,6 @@ public:
         MAExtent screenSize = maGetScrSize();
         Layout* layout = new Layout(0, 0, EXTENT_X(screenSize), EXTENT_Y(screenSize), NULL, 1, 3);
 
-        // sprintf(title, "%d/%d %d %d%%", maFreeObjectMemory(), maTotalObjectMemory(), split_time(maLocalTime(), new tm())->tm_sec, maGetBatteryCharge());
         header = new Label(0, 0, layout->getWidth(), context->paddedLineHeight, NULL, "CorpsePack v0.1  ËÄÇ: ÂÀÐìèÿ", context->unselectedBackgroundColor, context->unselectedFont);
         context->setSkinTo(header);
         footer = new Layout(0, 0, layout->getWidth(), context->paddedLineHeight, NULL, 2, 1);
@@ -186,6 +264,11 @@ public:
         main = layout;
         setMain(main);
         state = MAIN;
+		String buttons[] = {"Yes", "No", "Help"};
+        helpPopUp = new PopUp(main, "Help", helpText, MAK_SOFTLEFT, 3, buttons);
+        engine = &Engine::getSingleton();
+        updateStats();
+        moblet->addTimer(this, 500, 0);
     }
 
     ~CorpsePackScreen() {
@@ -195,12 +278,11 @@ public:
     void keyPressEvent(int keyCode) {
     	lprintfln("Pressed %d", keyCode);
     	if (popup && popup->processKeyPress(keyCode)) {
-    		delete popup;
+    		hidePopUp();
     	} else {
-			String buttons[] = {"Yes", "No", "Help"};
 			switch(keyCode) {
 			case MAK_SOFTLEFT:
-				popup = new PopUp(main, "Help", helpText, MAK_SOFTLEFT, 3, buttons);
+				showPopUp(helpPopUp);
 				break;
 			case MAK_SOFTRIGHT:
 				if (state == MAIN) {
@@ -225,7 +307,7 @@ public:
     void keyReleaseEvent(int keyCode) {
     	lprintfln("Released %d", keyCode);
     	if (popup && popup->processKeyRelease(keyCode)) {
-    		delete popup;
+    		hidePopUp();
     	} else {
 			switch(keyCode) {
 			case MAK_SOFTLEFT:
@@ -238,6 +320,26 @@ public:
 			}
 			maUpdateScreen();
     	}
+    }
+
+    void runTimerEvent() {
+    	updateStats();
+    }
+
+    void updateStats() {
+    	char title[256];
+        sprintf(title, "%sB/%sB %s %d%%", greekSize(maFreeObjectMemory()).c_str(), greekSize(maTotalObjectMemory()).c_str(), justTime(), maGetBatteryCharge());
+    	header->setCaption(title);
+    }
+
+    void showPopUp(PopUp* popup) {
+    	this->popup = popup;
+    	engine->showOverlay(0, 0, popup);
+    }
+
+    void hidePopUp() {
+		engine->hideOverlay();
+		this->popup = NULL;
     }
 };
 
