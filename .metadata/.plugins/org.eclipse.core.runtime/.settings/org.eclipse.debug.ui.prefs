@@ -1,0 +1,4 @@
+#Tue Apr 20 19:54:24 MSD 2010
+eclipse.preferences.version=1
+preferredTargets=org.eclipse.cdt.debug.ui.toggleCBreakpointTarget\:org.eclipse.cdt.debug.ui.toggleCBreakpointTarget|
+org.eclipse.debug.ui.PREF_LAUNCH_PERSPECTIVES=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\r\n<launchPerspectives>\r\n<launchPerspective configurationType\="com.mobilesorcery.launchconfigurationtype" mode\="debug" perspective\="org.eclipse.debug.ui.DebugPerspective"/>\r\n</launchPerspectives>\r\n

@@ -359,7 +359,6 @@ public:
 };
 
 extern "C" int MAMain() {
-	Character* character = new Character();
     Moblet::run(new CorpsePackMoblet());
     return 0;
 };

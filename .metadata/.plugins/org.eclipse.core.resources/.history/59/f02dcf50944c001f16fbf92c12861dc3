@@ -11,7 +11,6 @@
 #include <MAUI/ListBox.h>
 #include <MAUI/Screen.h>
 #include "MAHeaders.h"
-#include "Character.h"
 
 using namespace MAUtil;
 using namespace MAUI;
@@ -359,7 +358,6 @@ public:
 };
 
 extern "C" int MAMain() {
-	Character* character = new Character();
     Moblet::run(new CorpsePackMoblet());
     return 0;
 };
