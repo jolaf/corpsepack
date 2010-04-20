@@ -177,7 +177,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CorpsePack.cpp"
+				RelativePath=".\src\CorpsePack.cpp"
 				>
 			</File>
 		</Filter>
@@ -191,11 +191,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CorpsePack.h"
+				RelativePath=".\src\CorpsePack.h"
 				>
 			</File>
 			<File
-				RelativePath=".\System.h"
+				RelativePath=".\src\System.h"
 				>
 			</File>
 		</Filter>
