@@ -12,6 +12,7 @@
 #include <MAUI/Screen.h>
 #include "MAHeaders.h"
 #include "Character.h"
+#include "CorpsePack.h"
 
 using namespace MAUtil;
 using namespace MAUI;
