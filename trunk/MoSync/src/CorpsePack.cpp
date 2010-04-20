@@ -1,18 +1,22 @@
 #include <matime.h>
 #include <mavsprintf.h>
 #include <maxtoa.h>
+
 #include <MAUtil/util.h>
 #include <MAUtil/Environment.h>
 #include <MAUtil/Moblet.h>
+
 #include <MAUI/Engine.h>
 #include <MAUI/Font.h>
 #include <MAUI/Label.h>
 #include <MAUI/Layout.h>
 #include <MAUI/ListBox.h>
 #include <MAUI/Screen.h>
+
 #include "MAHeaders.h"
-#include "Character.h"
+
 #include "CorpsePack.h"
+#include "Character.h"
 
 using namespace MAUtil;
 using namespace MAUI;
