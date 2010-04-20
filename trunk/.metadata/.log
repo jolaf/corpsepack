@@ -3638,3 +3638,149 @@ java.io.IOException: Write end dead
 	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$1(OutputStreamMonitor.java:134)
 	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:207)
 	at java.lang.Thread.run(Thread.java:619)
+
+!ENTRY org.eclipse.core.resources 4 2 2010-04-20 19:50:06.015
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	... 14 more
+!SUBENTRY 1 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.015
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 2 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.015
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!SUBENTRY 1 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.015
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 2 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.015
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+
+!ENTRY org.eclipse.core.resources 4 75 2010-04-20 19:50:06.034
+!MESSAGE Errors occurred during the build.
+!SUBENTRY 1 com.mobilesorcery.sdk.core 2 75 2010-04-20 19:50:06.034
+!MESSAGE Errors running builder 'MoSync Builder' on project 'MoSync'.
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+Caused by: org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	... 14 more
+!SUBENTRY 2 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.034
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 3 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.034
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!SUBENTRY 1 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.034
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+!STACK 1
+org.eclipse.core.runtime.CoreException: Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib
+	at com.mobilesorcery.sdk.internal.PipeTool.run(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.incrementalBuild(Unknown Source)
+	at com.mobilesorcery.sdk.core.MoSyncBuilder.build(Unknown Source)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:627)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:170)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:201)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:253)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:256)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:309)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:341)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:140)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:238)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+!SUBENTRY 2 com.mobilesorcery.sdk.core 4 0 2010-04-20 19:50:06.034
+!MESSAGE Pipe tool failed. (See console for more information).
+ Command line: c:\MoSync\bin\pipe-tool.exe -appcode=SHRW -collect-stabs -heapsize=32768 -sld -sc:\MoSync\lib\pipe -B D:\CorpsePack\MoSync\Output\Release\program D:\CorpsePack\MoSync\Output\Release\CorpsePack.s MAStd.lib MAUtil.lib MAUI.lib

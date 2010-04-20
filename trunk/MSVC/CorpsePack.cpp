@@ -1,11 +1,10 @@
-// CorpsePack.cpp : Defines the entry point for the console application.
-//
+#include <stdio.h>
+#include <tchar.h>
 
-#include "stdafx.h"
+//#include "System.h"
+#include "Character.h"
 
-
-int _tmain(int argc, _TCHAR* argv[])
-{
+int _tmain(int argc, _TCHAR* argv[]) {
+	Character* character = new Character();
 	return 0;
 }
-
