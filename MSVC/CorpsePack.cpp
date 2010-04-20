@@ -5,6 +5,6 @@
 #include "Character.h"
 
 int _tmain(int argc, _TCHAR* argv[]) {
-	Character* character = new Character();
-	return 0;
+    Character* character = new Character();
+    return 0;
 }

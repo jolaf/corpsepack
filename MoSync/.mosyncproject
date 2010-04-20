@@ -3,7 +3,7 @@
 <build.cfg id="Debug"/>
 <build.cfg id="Release"/>
 <properties>
-<property key="build.prefs:additional.include.paths/Debug" value=""/>
+<property key="build.prefs:additional.include.paths/Debug" value="..\Character"/>
 <property key="build.prefs:additional.include.paths/Release" value="..\Character"/>
 <property key="build.prefs:additional.libraries" value="MAUtil.lib"/>
 <property key="build.prefs:additional.libraries/Debug" value="MAUtilD.lib, MAUID.lib"/>
@@ -20,6 +20,7 @@
 <property key="build.prefs:memory.heap/Release" value="32"/>
 <property key="build.prefs:project.type" value=""/>
 <property key="dependency.strategy" value="1"/>
+<property key="excludes/Debug" value=""/>
 <property key="symbian.uids:uid.s60v2uid" value="0x0c26dbd8"/>
 <property key="symbian.uids:uid.s60v3uid" value="0xebbdbdbc"/>
 <property key="template.id" value="project.moblet"/>

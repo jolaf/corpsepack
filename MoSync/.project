@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CorpsePack</name>
+	<name>MoSync</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -16,4 +16,11 @@
 		<nature>org.eclipse.cdt.core.cnature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Character</name>
+			<type>2</type>
+			<location>D:/CorpsePack/Character</location>
+		</link>
+	</linkedResources>
 </projectDescription>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="com.mobilesorcery.launchconfigurationtype">
+<stringAttribute key="process_factory_id" value="com.mobilesorcery.sdk.builder.nonterminableprocessfactory"/>
+<stringAttribute key="project" value="MAUIex"/>
+<stringAttribute key="screen.height" value="220"/>
+<stringAttribute key="screen.width" value="176"/>
+</launchConfiguration>

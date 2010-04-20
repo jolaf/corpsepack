@@ -22,51 +22,51 @@ using namespace MAUI;
 #define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
 
 String& getString(MAHandle stringResource) {
-	int length = maGetDataSize(stringResource);
-	String* output;
-	if (length) {
-		char buffer[length + 1];
-		maReadData(stringResource, buffer, 0, length);
-		buffer[length] = '\x00';
-		output = new String(buffer);
-	} else {
-		output = new String();
-	}
-	return *output;
+    int length = maGetDataSize(stringResource);
+    String* output;
+    if (length) {
+        char buffer[length + 1];
+        maReadData(stringResource, buffer, 0, length);
+        buffer[length] = '\x00';
+        output = new String(buffer);
+    } else {
+        output = new String();
+    }
+    return *output;
 }
 
 #define GREEK_SIZES " KMGT"
 #define GREEK_SIZES_NUM 4
 
 String greekSize(int value) {
-	char buffer[8];
-	int a = MOD(value);
-	if (a < 1024) {
-		itoa(value, buffer, 10);
-	} else {
-		char* p = GREEK_SIZES;
-		if (a > 2147483135) {
-			a -= 512;
-		}
-		int b;
-		do {
-			b = a;
-			a = (a + 512) / 1024;
-			p++;
-		} while (a);
-		if (value < 0) {
-			b = -b;
-		}
-		sprintf(buffer, "%d%c", b, *p);
-	}
-	return String(buffer);
+    char buffer[8];
+    int a = MOD(value);
+    if (a < 1024) {
+        itoa(value, buffer, 10);
+    } else {
+        char* p = GREEK_SIZES;
+        if (a > 2147483135) {
+            a -= 512;
+        }
+        int b;
+        do {
+            b = a;
+            a = (a + 512) / 1024;
+            p++;
+        } while (a);
+        if (value < 0) {
+            b = -b;
+        }
+        sprintf(buffer, "%d%c", b, *p);
+    }
+    return String(buffer);
 }
 
 char* justTime() {
-	char* date = sprint_time(maLocalTime());
-	date = date + (strlen(date) - 13);
-	date[8] = '\x00';
-	return date;
+    char* date = sprint_time(maLocalTime());
+    date = date + (strlen(date) - 13);
+    date[8] = '\x00';
+    return date;
 }
 
 class Context {
@@ -121,18 +121,18 @@ public:
     }
 
     ~Context() {
-    	delete selectedFont;
-    	delete unselectedFont;
-    	delete skin;
+        delete selectedFont;
+        delete unselectedFont;
+        delete skin;
     }
 
     void setSkinTo(Widget* widget) {
-    	widget->setBackgroundColor(unselectedBackgroundColor);
-    	widget->setSkin(skin);
-    	widget->setPaddingLeft(paddingLeft);
-    	widget->setPaddingRight(paddingRight);
-    	widget->setPaddingTop(paddingTop);
-    	widget->setPaddingBottom(paddingBottom);
+        widget->setBackgroundColor(unselectedBackgroundColor);
+        widget->setSkin(skin);
+        widget->setPaddingLeft(paddingLeft);
+        widget->setPaddingRight(paddingRight);
+        widget->setPaddingTop(paddingTop);
+        widget->setPaddingBottom(paddingBottom);
     }
 };
 
@@ -141,94 +141,94 @@ String& helpText = getString(HELP_TEXT);
 
 class PopUp : public ListBox {
 protected:
-	int keyCode;
+    int keyCode;
 
 public:
-	PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
-			: ListBox(0, 0, parent->getWidth(), parent->getHeight(), NULL, ListBox::LBO_VERTICAL) {
-		this->keyCode = keyCode;
-		Label* title = new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
-		title->setHorizontalAlignment(Label::HA_CENTER);
-		context->setSkinTo(title);
-		Layout* menu = NULL;
-		if (numButtons > 0) {
-			menu = new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
-			context->setSkinTo(menu);
-			for (int i = 0; i < numButtons; i++) {
-				Label* button = new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
-				button->setHorizontalAlignment((i > 0 && i < numButtons - 1) ? Label::HA_CENTER : (i == 0) ? Label::HA_LEFT : Label::HA_RIGHT);
-			}
-		}
-		Label* content = new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
-		content->setMultiLine();
-		context->setSkinTo(content);
-		add(title);
-		add(content);
-		if (menu) {
-			add(menu);
-		}
-	}
+    PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
+            : ListBox(0, 0, parent->getWidth(), parent->getHeight(), NULL, ListBox::LBO_VERTICAL) {
+        this->keyCode = keyCode;
+        Label* title = new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
+        title->setHorizontalAlignment(Label::HA_CENTER);
+        context->setSkinTo(title);
+        Layout* menu = NULL;
+        if (numButtons > 0) {
+            menu = new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
+            context->setSkinTo(menu);
+            for (int i = 0; i < numButtons; i++) {
+                Label* button = new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
+                button->setHorizontalAlignment((i > 0 && i < numButtons - 1) ? Label::HA_CENTER : (i == 0) ? Label::HA_LEFT : Label::HA_RIGHT);
+            }
+        }
+        Label* content = new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
+        content->setMultiLine();
+        context->setSkinTo(content);
+        add(title);
+        add(content);
+        if (menu) {
+            add(menu);
+        }
+    }
 
-	int processKeyPress(int keyCode) {
-		return 0; // ToDo
-	}
+    int processKeyPress(int keyCode) {
+        return 0; // ToDo
+    }
 
-	int processKeyRelease(int keyCode) {
-		if (this->keyCode && keyCode == this->keyCode) {
-			return 1;
-		}
-		return 0;
-	}
+    int processKeyRelease(int keyCode) {
+        if (this->keyCode && keyCode == this->keyCode) {
+            return 1;
+        }
+        return 0;
+    }
 };
 
 class ProgressBar : public Widget {
 public:
-	enum Direction { LEFT_TO_RIGHT, RIGHT_TO_LEFT };
+    enum Direction { LEFT_TO_RIGHT, RIGHT_TO_LEFT };
 
 protected:
-	int percentage;
-	Direction direction;
-	Label* empty;
-	Label* full;
+    int percentage;
+    Direction direction;
+    Label* empty;
+    Label* full;
 
-	void updateContents() {
-		int fullWidth = (paddedBounds.width * percentage) / 100;
-		int emptyWidth = paddedBounds.width - fullWidth;
-		empty->setPosition(direction == LEFT_TO_RIGHT ? fullWidth : 0, 0);
-		empty->setWidth(emptyWidth);
-		empty->setHeight(paddedBounds.height);
-		full->setPosition(direction == RIGHT_TO_LEFT ? emptyWidth : 0, 0);
-		full->setWidth(fullWidth);
-		full->setHeight(paddedBounds.height);
-	}
+    void updateContents() {
+        int fullWidth = (paddedBounds.width * percentage) / 100;
+        int emptyWidth = paddedBounds.width - fullWidth;
+        empty->setPosition(direction == LEFT_TO_RIGHT ? fullWidth : 0, 0);
+        empty->setWidth(emptyWidth);
+        empty->setHeight(paddedBounds.height);
+        full->setPosition(direction == RIGHT_TO_LEFT ? emptyWidth : 0, 0);
+        full->setWidth(fullWidth);
+        full->setHeight(paddedBounds.height);
+    }
 
 public:
-	ProgressBar(int x, int y, int width, int height, Widget* parent = NULL, int emptyColor = 0xffffff, int fullColor = 0x000000, Direction direction = LEFT_TO_RIGHT, int initialPercentage = 0)
-			: Widget(x, y, width, height, parent), direction(direction), percentage(initialPercentage) {
-		empty = new Label(0, 0, 0, 0, this);
-		empty->setBackgroundColor(emptyColor);
-		full = new Label(0, 0, 0, 0, this);
-		full->setBackgroundColor(fullColor);
-		updateContents();
-	}
+    ProgressBar(int x, int y, int width, int height, Widget* parent = NULL, int emptyColor = 0xffffff, int fullColor = 0x000000, Direction direction = LEFT_TO_RIGHT, int initialPercentage = 0)
+            : Widget(x, y, width, height, parent), direction(direction), percentage(initialPercentage) {
+        empty = new Label(0, 0, 0, 0, this);
+        empty->setBackgroundColor(emptyColor);
+        full = new Label(0, 0, 0, 0, this);
+        full->setBackgroundColor(fullColor);
+        updateContents();
+    }
 
-	int getPercentage() {
-		return percentage;
-	}
+    int getPercentage() {
+        return percentage;
+    }
 
-	void setPercentage(int percentage) {
-		this->percentage = percentage;
-	}
+    void setPercentage(int percentage) {
+        this->percentage = percentage;
+    }
 
-	void drawWidget() {
-		updateContents();
-		Widget::update();
-	}
+    void drawWidget() {
+        updateContents();
+        Widget::update();
+    }
 };
 
 class CorpsePackScreen : public Screen, TimerListener {
 protected:
-	Moblet* moblet;
+    Moblet* moblet;
     Widget* main;
     Label* header;
     ListBox* content;
@@ -238,12 +238,12 @@ protected:
     PopUp* popup;
     PopUp* helpPopUp;
     Engine* engine;
-	enum States { MAIN, POPUP_GROWING, POPUP, POPUP_SHRINKING } state;
+    enum States { MAIN, POPUP_GROWING, POPUP, POPUP_SHRINKING } state;
 
 public:
     CorpsePackScreen(Moblet* moblet) {
-    	lprintfln("# Started");
-    	this->moblet = moblet;
+        lprintfln("# Started");
+        this->moblet = moblet;
         MAExtent screenSize = maGetScrSize();
         Layout* layout = new Layout(0, 0, EXTENT_X(screenSize), EXTENT_Y(screenSize), NULL, 1, 3);
 
@@ -265,7 +265,7 @@ public:
         main = layout;
         setMain(main);
         state = MAIN;
-		String buttons[] = {"Yes", "No", "Help"};
+        String buttons[] = {"Yes", "No", "Help"};
         helpPopUp = new PopUp(main, "Help", helpText, MAK_SOFTLEFT, 3, buttons);
         engine = &Engine::getSingleton();
         updateStats();
@@ -277,70 +277,70 @@ public:
     }
 
     void keyPressEvent(int keyCode) {
-    	lprintfln("Pressed %d", keyCode);
-    	if (popup && popup->processKeyPress(keyCode)) {
-    		hidePopUp();
-    	} else {
-			switch(keyCode) {
-			case MAK_SOFTLEFT:
-				showPopUp(helpPopUp);
-				break;
-			case MAK_SOFTRIGHT:
-				if (state == MAIN) {
-					state = POPUP;
-				}
-				break;
-			case MAK_DOWN:
-				if (state == MAIN) {
-					content->selectNextItem(true);
-				}
-				break;
-			case MAK_UP:
-				if (state == MAIN) {
-					content->selectPreviousItem(true);
-				}
-				break;
-			}
-    	}
+        lprintfln("Pressed %d", keyCode);
+        if (popup && popup->processKeyPress(keyCode)) {
+            hidePopUp();
+        } else {
+            switch(keyCode) {
+            case MAK_SOFTLEFT:
+                showPopUp(helpPopUp);
+                break;
+            case MAK_SOFTRIGHT:
+                if (state == MAIN) {
+                    state = POPUP;
+                }
+                break;
+            case MAK_DOWN:
+                if (state == MAIN) {
+                    content->selectNextItem(true);
+                }
+                break;
+            case MAK_UP:
+                if (state == MAIN) {
+                    content->selectPreviousItem(true);
+                }
+                break;
+            }
+        }
         maUpdateScreen();
     }
 
     void keyReleaseEvent(int keyCode) {
-    	lprintfln("Released %d", keyCode);
-    	if (popup && popup->processKeyRelease(keyCode)) {
-    		hidePopUp();
-    	} else {
-			switch(keyCode) {
-			case MAK_SOFTLEFT:
-				// if (we're in help) {
-				break;
-			case MAK_SOFTRIGHT:
-				// Shutdown, context should have already been saved in RMS
-				moblet->closeEvent(); // calls close();
-				break;
-			}
-			maUpdateScreen();
-    	}
+        lprintfln("Released %d", keyCode);
+        if (popup && popup->processKeyRelease(keyCode)) {
+            hidePopUp();
+        } else {
+            switch(keyCode) {
+            case MAK_SOFTLEFT:
+                // if (we're in help) {
+                break;
+            case MAK_SOFTRIGHT:
+                // Shutdown, context should have already been saved in RMS
+                moblet->closeEvent(); // calls close();
+                break;
+            }
+            maUpdateScreen();
+        }
     }
 
     void runTimerEvent() {
-    	updateStats();
+        updateStats();
     }
 
     void updateStats() {
-    	char title[256];
+        char title[256];
         sprintf(title, "%sB/%sB %s %d%%", greekSize(maFreeObjectMemory()).c_str(), greekSize(maTotalObjectMemory()).c_str(), justTime(), maGetBatteryCharge());
-    	header->setCaption(title);
+        header->setCaption(title);
     }
 
     void showPopUp(PopUp* popup) {
-    	this->popup = popup;
-    	engine->showOverlay(0, 0, popup);
+        this->popup = popup;
+        engine->showOverlay(0, 0, popup);
     }
 
     void hidePopUp() {
-		engine->hideOverlay();
-		this->popup = NULL;
+        engine->hideOverlay();
+        this->popup = NULL;
     }
 };
 
@@ -359,7 +359,7 @@ public:
 };
 
 extern "C" int MAMain() {
-	Character* character = new Character();
+    Character* character = new Character();
     Moblet::run(new CorpsePackMoblet());
     return 0;
 };
