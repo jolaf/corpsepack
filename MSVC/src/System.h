@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_WINNT_NT4     // Specifies that the minimum required platform is Windows NT4.
+#ifndef _WIN32_WINNT  // Specifies that the minimum required platform is Windows NT4
+#define _WIN32_WINNT _WIN32_WINNT_NT4
 #endif
 
 // Exclude APIs such as Cryptography, DDE, RPC, Shell, and Windows Sockets
