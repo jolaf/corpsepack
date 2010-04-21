@@ -15,16 +15,11 @@
 
 #include "MAHeaders.h"
 
-#include "CorpsePack.h"
-#include "Character.h"
-
 using namespace MAUtil;
 using namespace MAUI;
 
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#define MOD(x) ((x >= 0) ? (x) : (-x))
-#define ARRAYSIZE(a) (sizeof(a) / sizeof(a[0]))
+#include "CorpsePack.h"
+#include "Character.h"
 
 String& getString(MAHandle stringResource) {
     int length = maGetDataSize(stringResource);
@@ -45,7 +40,7 @@ String& getString(MAHandle stringResource) {
 
 String greekSize(int value) {
     char buffer[8];
-    int a = MOD(value);
+    int a = mod(value);
     if (a < 1024) {
         itoa(value, buffer, 10);
     } else {
@@ -121,7 +116,7 @@ public:
         paddingBottom = b;
         maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
         paddingLeft = b;
-        lineHeight = MAX(EXTENT_Y(selectedFont->getStringDimensions("M")), EXTENT_Y(unselectedFont->getStringDimensions("M")));
+        lineHeight = max(EXTENT_Y(selectedFont->getStringDimensions("M")), EXTENT_Y(unselectedFont->getStringDimensions("M")));
         paddedLineHeight = lineHeight + paddingTop + paddingBottom;
     }
 
@@ -228,6 +223,40 @@ public:
     void drawWidget() {
         updateContents();
         Widget::update();
+    }
+};
+
+class EventTimerListener : public TimerListener {
+public:
+    Character* character;
+    int time;
+
+    EventTimerListener(Character* character) : character(character), time(0) {
+        update();
+    }
+
+    void runTimerEvent() {
+        update();
+    }
+
+    /**
+     * Must be called each time when it's supposed that Character's event context
+     * may have been changed and new events may have been queued.
+     * Called automatically from EventTimerListener() and runTimerEvent().
+     */
+    void update() {
+        CharacterEvent* event = character->getNextEvent(time);
+        if (event) {
+            // ToDo: process event - it must be fast, event confirmation must be done elsewhere.
+        }
+        if (time >= 0) {
+            // If time == 0, do not call getNextEvent() and process it immediately,
+            // but set timer and wait for the next tick instead - to make sure
+            // runTimerEvent() runs fast.
+            Environment::getEnvironment().addTimer(this, time * 1000, 1);
+        } else { // time < 0
+            // Do not add timer, as no events are expected.
+        }
     }
 };
 
