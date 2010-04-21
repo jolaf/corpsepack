@@ -1,14 +1,12 @@
 #ifndef __CorpsePack_h__
 #define __CorpsePack_h__
 
-#ifdef __cplusplus
-extern "C"{
-#endif // __cplusplus 
+#define max(x, y) ((x) > (y) ? (x) : (y))
+#define min(x, y) ((x) < (y) ? (x) : (y))
+#define mod(x) ((x >= 0) ? (x) : (-x))
+#define arraySize(a) (sizeof(a) / sizeof(a[0]))
 
-// ToDo
-
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+#define String string
+#define sprintf sprintf_s
 
 #endif // __CorpsePack_h__

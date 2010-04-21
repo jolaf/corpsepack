@@ -7,7 +7,7 @@
 
 #include "Character.h"
 
-EventCard::EventCard(int code) : code(code) {
+EventSequence::EventSequence(int code) : code(code) {
 }
 
 CharacterEvent::CharacterEvent(const Type type, const String& text) : type(type), text(text) {
@@ -20,6 +20,7 @@ Character::Character() {
 
 CharacterEvent* Character::getNextEvent(int& time) {
     // ToDo: check EventCards, find a first group of close events, return the first one.
+	return NULL;
 }
 
 String& Character::getStatus() {
