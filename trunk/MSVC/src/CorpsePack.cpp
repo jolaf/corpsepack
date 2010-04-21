@@ -1,7 +1,11 @@
 #include "System.h"
 
-#include <stdio.h>
+#include <string>
+#include <iostream>
+
 #include <tchar.h>
+
+using namespace std;
 
 #include "CorpsePack.h"
 #include "Character.h"

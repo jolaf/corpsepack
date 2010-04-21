@@ -1,11 +1,26 @@
 #ifndef __Character_h__
 #define __Character_h__
 
-class EventCard {
+#define max(x, y) ((x) > (y) ? (x) : (y))
+#define min(x, y) ((x) < (y) ? (x) : (y))
+#define mod(x) ((x >= 0) ? (x) : (-x))
+#define arraySize(a) (sizeof(a) / sizeof(a[0]))
+
+class EventSequence {
 public:
     int code;
 
-    EventCard(int code);
+    EventSequence(int code);
+};
+
+class Disease : public EventSequence {
+public:
+	Disease(int code);
+};
+
+class Implant : public EventSequence {
+public:
+	Implant(int code);
 };
 
 class CharacterEvent {
