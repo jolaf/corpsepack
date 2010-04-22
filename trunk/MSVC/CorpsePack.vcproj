@@ -198,10 +198,6 @@
 				RelativePath=".\src\Platform.h"
 				>
 			</File>
-			<File
-				RelativePath=".\src\System.h"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -19,7 +19,6 @@ using namespace MAUtil;
 using namespace MAUI;
 
 #include "CorpsePack.h"
-#include "Character.h"
 
 String& getString(MAHandle stringResource) {
     int length = maGetDataSize(stringResource);
