@@ -1,5 +1,7 @@
-#ifndef __Character_h__
-#define __Character_h__
+#ifndef __CorpsePack__Character_h__
+#define __CorpsePack__Character_h__
+
+#include "Platform.h"
 
 #define max(x, y) ((x) > (y) ? (x) : (y))
 #define min(x, y) ((x) < (y) ? (x) : (y))
@@ -29,9 +31,9 @@ public:
     enum Confirmation { YES, NO };
 
     const Type type;
-    const String& text;
+    const string& text;
 
-    CharacterEvent(const Type type, const String& text);
+    CharacterEvent(const Type type, const string& text);
 };
 
 class Character {
@@ -68,7 +70,7 @@ public:
      *
      * @return  String describing current character status.
      */
-    String& getStatus();
+    string& getStatus();
 };
 
-#endif // __Character_h__
+#endif // __CorpsePack__Character_h__
