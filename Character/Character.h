@@ -3,11 +3,6 @@
 
 #include "Platform.h"
 
-#define max(x, y) ((x) > (y) ? (x) : (y))
-#define min(x, y) ((x) < (y) ? (x) : (y))
-#define mod(x) ((x >= 0) ? (x) : (-x))
-#define arraySize(a) (sizeof(a) / sizeof(a[0]))
-
 class EventSequence {
 public:
     int code;

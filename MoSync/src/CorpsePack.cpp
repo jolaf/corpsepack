@@ -19,210 +19,13 @@
 using namespace MAUtil;
 using namespace MAUI;
 
+#include "Util.h"
+#include "UIElements.h"
 #include "CorpsePack.h"
-
-String& getString(MAHandle stringResource) {
-    int length = maGetDataSize(stringResource);
-    String* output;
-    if (length) {
-        char buffer[length + 1];
-        maReadData(stringResource, buffer, 0, length);
-        buffer[length] = '\x00';
-        output = new String(buffer);
-    } else {
-        output = new String();
-    }
-    return *output;
-}
-
-String greekSize(int value) {
-    char buffer[8];
-    int a = mod(value);
-    if (a <= 9999) {
-        itoa(value, buffer, 10);
-    } else {
-        a /= 1024;
-        char* p = "KMGTPEZY";
-        while (a > 9999) {
-            a /= 1024;
-            p++;
-        }
-        if (value < 0) {
-            a = -a;
-        }
-        sprintf(buffer, "%d%c", a, *p);
-    }
-    return String(buffer);
-}
-
-char* justTime() {
-    int localTime = maLocalTime();
-    if (DAYLIGHT_SAVING_TIME) {
-        // Workaround for MoSync issue 646
-        localTime += 60 * 60;
-    }
-    char* date = sprint_time(localTime);
-    date += strlen(date) - 13;
-    date[8] = '\x00';
-    return date;
-}
-
-class Context {
-public:
-    Font* selectedFont;
-    Font* unselectedFont;
-    int selectedBackgroundColor;
-    int unselectedBackgroundColor;
-    byte paddingLeft;
-    byte paddingRight;
-    byte paddingTop;
-    byte paddingBottom;
-    byte lineHeight;
-    byte paddedLineHeight;
-    WidgetSkin* skin;
-
-    Context(MAHandle resourceID) {
-        int i;
-        int position = 0;
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        selectedFont = new Font(i);
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        unselectedFont = new Font(i);
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        selectedBackgroundColor = i;
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        unselectedBackgroundColor = i;
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        MAHandle selectedSkin = i;
-        maReadData(resourceID, &i, position, sizeof(i)); position += sizeof(i);
-        MAHandle unselectedSkin = i;
-        byte b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        byte x1 = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        byte x2 = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        byte y1 = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        byte y2 = b;
-        skin = new WidgetSkin(selectedSkin, unselectedSkin, x1, x2, y1, y2, true, true);
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        paddingTop = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        paddingRight = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        paddingBottom = b;
-        maReadData(resourceID, &b, position, sizeof(b)); position += sizeof(b);
-        paddingLeft = b;
-        lineHeight = max(EXTENT_Y(selectedFont->getStringDimensions("M")), EXTENT_Y(unselectedFont->getStringDimensions("M")));
-        paddedLineHeight = lineHeight + paddingTop + paddingBottom;
-    }
-
-    ~Context() {
-        delete selectedFont;
-        delete unselectedFont;
-        delete skin;
-    }
-
-    void setSkinTo(Widget* widget) {
-        widget->setBackgroundColor(unselectedBackgroundColor);
-        widget->setSkin(skin);
-        widget->setPaddingTop(paddingTop);
-        widget->setPaddingRight(paddingRight);
-        widget->setPaddingBottom(paddingBottom);
-        widget->setPaddingLeft(paddingLeft);
-    }
-};
 
 Context* context = new Context(CONTEXT);
 String& helpText = getString(HELP_TEXT);
 
-class PopUp : public ListBox {
-protected:
-    int keyCode;
-
-public:
-    PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode = 0, int numButtons = 0, String* buttonCaptions = NULL)
-            : ListBox(0, 0, parent->getWidth(), parent->getHeight(), NULL, ListBox::LBO_VERTICAL) {
-        this->keyCode = keyCode;
-        Label* title = new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
-        title->setHorizontalAlignment(Label::HA_CENTER);
-        context->setSkinTo(title);
-        Layout* menu = NULL;
-        if (numButtons > 0) {
-            menu = new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
-            context->setSkinTo(menu);
-            for (int i = 0; i < numButtons; i++) {
-                Label* button = new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
-                button->setHorizontalAlignment((i > 0 && i < numButtons - 1) ? Label::HA_CENTER : (i == 0) ? Label::HA_LEFT : Label::HA_RIGHT);
-            }
-        }
-        Label* content = new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
-        content->setMultiLine();
-        context->setSkinTo(content);
-        add(title);
-        add(content);
-        if (menu) {
-            add(menu);
-        }
-    }
-
-    int processKeyPress(int keyCode) {
-        return 0; // ToDo
-    }
-
-    int processKeyRelease(int keyCode) {
-        if (this->keyCode && keyCode == this->keyCode) {
-            return 1;
-        }
-        return 0;
-    }
-};
-
-class ProgressBar : public Widget {
-public:
-    enum Direction { LEFT_TO_RIGHT, RIGHT_TO_LEFT };
-
-protected:
-    int percentage;
-    Direction direction;
-    Label* empty;
-    Label* full;
-
-    void updateContents() {
-        int fullWidth = (paddedBounds.width * percentage) / 100;
-        int emptyWidth = paddedBounds.width - fullWidth;
-        empty->setPosition(direction == LEFT_TO_RIGHT ? fullWidth : 0, 0);
-        empty->setWidth(emptyWidth);
-        empty->setHeight(paddedBounds.height);
-        full->setPosition(direction == RIGHT_TO_LEFT ? emptyWidth : 0, 0);
-        full->setWidth(fullWidth);
-        full->setHeight(paddedBounds.height);
-    }
-
-public:
-    ProgressBar(int x, int y, int width, int height, Widget* parent = NULL, int emptyColor = 0xffffff, int fullColor = 0x000000, Direction direction = LEFT_TO_RIGHT, int initialPercentage = 0)
-            : Widget(x, y, width, height, parent), direction(direction), percentage(initialPercentage) {
-        empty = new Label(0, 0, 0, 0, this);
-        empty->setBackgroundColor(emptyColor);
-        full = new Label(0, 0, 0, 0, this);
-        full->setBackgroundColor(fullColor);
-        updateContents();
-    }
-
-    int getPercentage() {
-        return percentage;
-    }
-
-    void setPercentage(int percentage) {
-        this->percentage = percentage;
-    }
-
-    void drawWidget() {
-        updateContents();
-        Widget::update();
-    }
-};
 
 class EventTimerListener : public TimerListener {
 public:
@@ -360,8 +163,9 @@ public:
     }
 
     void updateStats() {
+    	char buffer[16];
         char title[256];
-        sprintf(title, "%sB/%sB %s %d%%", greekSize(maFreeObjectMemory()).c_str(), greekSize(maTotalObjectMemory()).c_str(), justTime(), maGetBatteryCharge());
+        sprintf(title, "%s %s %d%%", memInfo(buffer, maFreeObjectMemory(), maTotalObjectMemory()), justTime(), maGetBatteryCharge());
         header->setCaption(title);
     }
 
