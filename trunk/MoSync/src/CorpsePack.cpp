@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <matime.h>
 #include <mavsprintf.h>
 #include <maxtoa.h>
@@ -34,36 +35,34 @@ String& getString(MAHandle stringResource) {
     return *output;
 }
 
-#define GREEK_SIZES " KMGT"
-#define GREEK_SIZES_NUM 4
-
 String greekSize(int value) {
     char buffer[8];
     int a = mod(value);
-    if (a < 1024) {
+    if (a <= 9999) {
         itoa(value, buffer, 10);
     } else {
-        char* p = GREEK_SIZES;
-        if (a > 2147483135) {
-            a -= 512;
-        }
-        int b;
-        do {
-            b = a;
-            a = (a + 512) / 1024;
+        a /= 1024;
+        char* p = "KMGTPEZY";
+        while (a > 9999) {
+            a /= 1024;
             p++;
-        } while (a);
-        if (value < 0) {
-            b = -b;
         }
-        sprintf(buffer, "%d%c", b, *p);
+        if (value < 0) {
+            a = -a;
+        }
+        sprintf(buffer, "%d%c", a, *p);
     }
     return String(buffer);
 }
 
 char* justTime() {
-    char* date = sprint_time(maLocalTime());
-    date = date + (strlen(date) - 13);
+    int localTime = maLocalTime();
+    if (DAYLIGHT_SAVING_TIME) {
+        // Workaround for MoSync issue 646
+        localTime += 60 * 60;
+    }
+    char* date = sprint_time(localTime);
+    date += strlen(date) - 13;
     date[8] = '\x00';
     return date;
 }
@@ -128,10 +127,10 @@ public:
     void setSkinTo(Widget* widget) {
         widget->setBackgroundColor(unselectedBackgroundColor);
         widget->setSkin(skin);
-        widget->setPaddingLeft(paddingLeft);
-        widget->setPaddingRight(paddingRight);
         widget->setPaddingTop(paddingTop);
+        widget->setPaddingRight(paddingRight);
         widget->setPaddingBottom(paddingBottom);
+        widget->setPaddingLeft(paddingLeft);
     }
 };
 

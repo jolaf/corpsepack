@@ -3,6 +3,6 @@
 
 #include "Character.h"
 
-// ToDo
+#define DAYLIGHT_SAVING_TIME true
 
 #endif // __CorpsePack__CorpsePack_h__
