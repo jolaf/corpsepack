@@ -36,11 +36,20 @@ public:
     AutoUI(Width width, Height height, Context* context, SkinMode skinMode);
 };
 
-class TextLabel : public Label, public AutoUI {
+class ReconfigurableWidget : public Widget {
 public:
-    TextLabel(const String &caption, Width width, Height height, Context* context, SkinMode skinMode, bool multiLine = false);
+    enum Width { NARROW, WIDE };
+    enum Height { LOW, HIGH };
+    enum SkinMode { PADDING_ONLY, BACKGROUND, SKIN };
 
-    void configure();
+    void configure() = 0;
+};
+
+class ShortLabel : public Label, public ReconfigurableWidget {
+public:
+    enum Width { NARROW, WIDE };
+
+    ShortLabel(const String &caption, Width width = NARROW, Context* context = NULL, SkinMode skinMode = SKIN);
 };
 
 // ToDo: AutoListBox, AutoLayout
