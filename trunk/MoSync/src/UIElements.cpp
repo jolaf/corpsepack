@@ -76,7 +76,7 @@ TextLabel::TextLabel(const String &caption, Width width, Height height, Context*
 	} else {
 		setDrawBackground(true);
 		if (skinMode == SKIN && context->skin) {
-			setWidgetSkin(context->skin);
+			setSkin(context->skin);
 		} else {
 			setBackgroundColor(context->unselectedBackgroundColor);
 		}
@@ -90,7 +90,7 @@ TextLabel::TextLabel(const String &caption, Width width, Height height, Context*
 }
 
 void TextLabel::configure() {
-	int stringDimensions = context->selectedFont->getStringDimensions(caption);
+	int stringDimensions = context->selectedFont->getStringDimensions(caption.c_str());
 	int stringWidth = EXTENT_X(stringDimensions) + paddingLeft + paddingRight;
 	int stringHeight = EXTENT_Y(stringDimensions) + paddingTop + paddingBottom;
 	int parentWidth = parent->getWidth();
@@ -108,21 +108,21 @@ void TextLabel::configure() {
 PopUp::PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode, int numButtons, String* buttonCaptions)
 		: ListBox(0, 0, parent->getWidth(), parent->getHeight(), NULL, ListBox::LBO_VERTICAL) {
 	this->keyCode = keyCode;
-	Label* title = new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
+	Label* title = NULL; // new Label(0, 0, getWidth(), context->paddedLineHeight, NULL, titleCaption, context->unselectedBackgroundColor, context->unselectedFont);
 	title->setHorizontalAlignment(Label::HA_CENTER);
-	context->setSkinTo(title);
+	//context->setSkinTo(title);
 	Layout* menu = NULL;
 	if (numButtons > 0) {
-		menu = new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
-		context->setSkinTo(menu);
+		menu = NULL; // new Layout(0, 0, getWidth(), context->paddedLineHeight, NULL, numButtons, 1);
+		//context->setSkinTo(menu);
 		for (int i = 0; i < numButtons; i++) {
-			Label* button = new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
+			Label* button = NULL; // new Label(0, 0, menu->getPaddedBounds().width / numButtons, context->lineHeight, menu, buttonCaptions[i], context->unselectedBackgroundColor, context->unselectedFont);
 			button->setHorizontalAlignment((i > 0 && i < numButtons - 1) ? Label::HA_CENTER : (i == 0) ? Label::HA_LEFT : Label::HA_RIGHT);
 		}
 	}
-	Label* content = new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
-	content->setMultiLine();
-	context->setSkinTo(content);
+	Label* content = NULL; // new Label(0, 0, getWidth(), getHeight() - title->getHeight() - (menu ? menu->getHeight() : 0), NULL, caption, context->unselectedBackgroundColor, context->unselectedFont);
+	//content->setMultiLine();
+	//context->setSkinTo(content);
 	add(title);
 	add(content);
 	if (menu) {
