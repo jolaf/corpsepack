@@ -22,43 +22,38 @@ public:
     void setSkinTo(Widget* widget);
 };
 
-class AutoUI {
+class Reconfigurable {
 public:
-    enum Width { NARROW, WIDE };
-    enum Height { LOW, HIGH };
+    enum DimensionMode { SET, CHILDREN, PARENT };
     enum SkinMode { PADDING_ONLY, BACKGROUND, SKIN };
 
-    Width width;
-    Height height;
+    DimensionMode widthMode;
+    DimensionMode heightMode;
+
+    Widget* target;
     Context* context;
     SkinMode skinMode;
 
-    AutoUI(Width width, Height height, Context* context, SkinMode skinMode);
-};
-
-class ReconfigurableWidget {
-public:
-    enum Width { NARROW, WIDE };
-    enum Height { LOW, HIGH };
-    enum SkinMode { PADDING_ONLY, BACKGROUND, SKIN };
+    Reconfigurable(Widget* target, int width, int height, Context* context, SkinMode skinMode);
 
     virtual void configure() = 0;
 };
 
-class ShortLabel : public Label, public ReconfigurableWidget {
+class ShortLabel : public Label, public Reconfigurable {
 public:
-    enum WidthMode { NARROW, WIDE };
-
-    WidthMode widthMode;
-    Context* context;
-    SkinMode skinMode;
-
-    ShortLabel(const String &caption, WidthMode widthMode = NARROW, Context* context = NULL, SkinMode skinMode = SKIN);
+    ShortLabel(int width, int height, Context* context, SkinMode skinMode, const String& caption);
 
     void configure();
 };
 
-// ToDo: AutoListBox, AutoLayout
+class CompactListBox : public ListBox, public Reconfigurable {
+public:
+    CompactListBox(int width, int height, Context* context, SkinMode skinMode, ListBoxOrientation orientation = LBO_VERTICAL);
+
+    void configure();
+};
+
+// ToDo: AutoLayout
 
 class PopUp : public ListBox {
 protected:

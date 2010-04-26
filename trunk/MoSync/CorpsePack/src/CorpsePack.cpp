@@ -20,7 +20,6 @@ using namespace MAUtil;
 using namespace MAUI;
 
 #include "Util.h"
-#include "HeapInfo.h"
 #include "UIElements.h"
 #include "CorpsePack.h"
 
@@ -165,7 +164,7 @@ public:
 
     void updateStats() {
     	char b1[16], b2[16], title[64];
-        sprintf(title, "%s %s %s %d%%", memInfo(b1, maFreeObjectMemory(), maTotalObjectMemory()), memInfo(b2, freeHeapMemory(), totalHeapMemory()), justTime(), maGetBatteryCharge());
+        sprintf(title, "%s %s %d%%", memInfo(b1, maFreeObjectMemory(), maTotalObjectMemory()), justTime(), maGetBatteryCharge());
         header->setCaption(title);
     }
 

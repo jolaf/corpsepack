@@ -20,8 +20,8 @@
 <property key="build.prefs:memory.heap/Release" value="32"/>
 <property key="build.prefs:project.type" value=""/>
 <property key="dependency.strategy" value="1"/>
-<property key="excludes/Debug" value=""/>
-<property key="excludes/Release" value=""/>
+<property key="excludes/Debug" value="src/HeapInfo.c"/>
+<property key="excludes/Release" value="src/HeapInfo.c"/>
 <property key="symbian.uids:uid.s60v2uid" value="0x0c26dbd8"/>
 <property key="symbian.uids:uid.s60v3uid" value="0xebbdbdbc"/>
 <property key="template.id" value="project.moblet"/>

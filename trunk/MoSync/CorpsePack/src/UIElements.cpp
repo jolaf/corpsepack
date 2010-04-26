@@ -61,47 +61,118 @@ void Context::setSkinTo(Widget* widget) {
 	widget->setPaddingLeft(paddingLeft);
 }
 
-AutoUI::AutoUI(Width width, Height height, Context* context, SkinMode skinMode)
-		: width(width), height(height), context(context), skinMode(skinMode) {
+Reconfigurable::Reconfigurable(Widget* target, int width, int height, Context* context, SkinMode skinMode)
+		: target(target), context(context), skinMode(skinMode) {
+	target->setDrawBackground(false);
+	if (context) {
+		if (skinMode != PADDING_ONLY) {
+			target->setDrawBackground(true);
+			if (skinMode == SKIN && context->skin) {
+				target->setSkin(context->skin);
+			} else {
+				target->setBackgroundColor(context->unselectedBackgroundColor);
+			}
+		}
+		target->setPaddingTop(context->paddingTop);
+		target->setPaddingRight(context->paddingRight);
+		target->setPaddingBottom(context->paddingBottom);
+		target->setPaddingLeft(context->paddingLeft);
+	}
+	if (width > 0) {
+		widthMode = SET;
+		target->setWidth(width);
+	} else {
+		widthMode = (width == 0) ? CHILDREN : /* < 0 */ PARENT;
+	}
+	if (height > 0) {
+		heightMode = SET;
+		target->setHeight(height);
+	} else {
+		heightMode = (height == 0) ? CHILDREN : /* < 0 */ PARENT;
+	}
 }
 
-ShortLabel::ShortLabel(const String& caption, WidthMode widthMode, Context* context, SkinMode skinMode)
-		: Label(0, 0, 0, 0, NULL), widthMode(widthMode), context(context), skinMode(skinMode) {
+ShortLabel::ShortLabel(int width, int height, Context* context, SkinMode skinMode, const String& caption)
+		: Label(0, 0, 0, 0, NULL), Reconfigurable(this, width, height, context, skinMode) {
 	setMultiLine(false);
 	if (context) {
 		setFont(context->unselectedFont);
 	}
 	setCaption(caption);
-
-	setDrawBackground(false);
-	if (context) {
-		if (skinMode != PADDING_ONLY) {
-			setDrawBackground(true);
-			if (skinMode == SKIN && context->skin) {
-				setSkin(context->skin);
-			} else {
-				setBackgroundColor(context->unselectedBackgroundColor);
-			}
-		}
-		setPaddingTop(context->paddingTop);
-		setPaddingRight(context->paddingRight);
-		setPaddingBottom(context->paddingBottom);
-		setPaddingLeft(context->paddingLeft);
-	}
 }
 
 void ShortLabel::configure() {
 	int stringDimensions = context->selectedFont->getStringDimensions(caption.c_str());
-	int stringWidth = EXTENT_X(stringDimensions) + paddingLeft + paddingRight;
-	int stringHeight = EXTENT_Y(stringDimensions) + paddingTop + paddingBottom;
-	int parentWidth = parent->getWidth();
-
-	if (stringWidth > parentWidth || widthMode == WIDE) {
-		setWidth(parentWidth);
-	} else {
-		setWidth(stringWidth);
+	if (widthMode == CHILDREN) {
+		setWidth(EXTENT_X(stringDimensions) + paddingLeft + paddingRight);
 	}
-	setHeight(stringHeight);
+	if (heightMode == CHILDREN) {
+		setHeight(EXTENT_Y(stringDimensions) + paddingTop + paddingBottom);
+	}
+}
+
+enum DimensionMode { SET, CHILDREN, PARENT };
+
+DimensionMode widthMode;
+DimensionMode heightMode;
+
+CompactListBox::CompactListBox(int width, int height, Context* context, SkinMode skinMode, ListBoxOrientation orientation)
+		: ListBox(0, 0, 0, 0, NULL, orientation), Reconfigurable(this, width, height, context, skinMode) {
+}
+
+void CompactListBox::configure() {
+	int childrenWidth = 0;
+	int childrenHeight = 0;
+	int numChildren = children.size();
+	for (int i = 0; i < numChildren; i++) {
+		Widget* child = children[i];
+		Reconfigurable* reconfigurable = (Reconfigurable*) child;
+		reconfigurable->configure();
+		if (reconfigurable->widthMode != PARENT) {
+			int childWidth = child->getWidth();
+			if (orientation == LBO_VERTICAL) { // Find maximum width
+				if (childWidth > childrenWidth) {
+					childrenWidth = childWidth;
+				}
+			} else { // LBO_HORIZONTAL, find total width
+				childrenWidth += childWidth;
+			}
+		}
+		if (reconfigurable->heightMode != PARENT) {
+			int childHeight = child->getHeight();
+			if (orientation == LBO_HORIZONTAL) { // Find maximum height
+				if (childHeight > childrenHeight) {
+					childrenHeight = childHeight;
+				}
+			} else { // LBO_VERTICAL, find total height
+				childrenHeight += childHeight;
+			}
+		}
+	}
+	if (widthMode == CHILDREN) {
+		setWidth(childrenWidth + paddingLeft + paddingRight);
+	}
+	if (heightMode == CHILDREN) {
+		setHeight(childrenHeight + paddingTop + paddingBottom);
+	}
+	for (int i = 0; i < numChildren; i++) {
+		Widget* child = children[i];
+		Reconfigurable* reconfigurable = (Reconfigurable*) child; // ToDo: This would crash!!!
+		if (reconfigurable->widthMode == PARENT) {
+			if (orientation == LBO_HORIZONTAL) {
+				// child->setWidth(???); // ToDo: calculate equal width
+			} else { // LBO_VERTICAL
+				child->setWidth(childrenWidth);
+			}
+		}
+		if (reconfigurable->heightMode != PARENT) {
+			if (orientation == LBO_VERTICAL) {
+				// child->setHeight(???); // ToDo: calculate equal height
+			} else { // LBO_HORIZONTAL
+				child->setHeight(childrenHeight);
+			}
+		}
+	}
 }
 
 PopUp::PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode, int numButtons, String* buttonCaptions)
