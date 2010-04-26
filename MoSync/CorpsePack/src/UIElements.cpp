@@ -65,23 +65,24 @@ AutoUI::AutoUI(Width width, Height height, Context* context, SkinMode skinMode)
 		: width(width), height(height), context(context), skinMode(skinMode) {
 }
 
-TextLabel::TextLabel(const String &caption, Width width, Height height, Context* context, SkinMode skinMode, bool multiLine)
-		: Label(0, 0, 0, 0, NULL), AutoUI(width, height, context, skinMode) {
-	setMultiLine(multiLine);
-	setFont(context->unselectedFont);
+ShortLabel::ShortLabel(const String& caption, WidthMode widthMode, Context* context, SkinMode skinMode)
+		: Label(0, 0, 0, 0, NULL), widthMode(widthMode), context(context), skinMode(skinMode) {
+	setMultiLine(false);
+	if (context) {
+		setFont(context->unselectedFont);
+	}
 	setCaption(caption);
 
-	if (skinMode == PADDING_ONLY) {
-		setDrawBackground(false);
-	} else {
-		setDrawBackground(true);
-		if (skinMode == SKIN && context->skin) {
-			setSkin(context->skin);
-		} else {
-			setBackgroundColor(context->unselectedBackgroundColor);
-		}
-	}
+	setDrawBackground(false);
 	if (context) {
+		if (skinMode != PADDING_ONLY) {
+			setDrawBackground(true);
+			if (skinMode == SKIN && context->skin) {
+				setSkin(context->skin);
+			} else {
+				setBackgroundColor(context->unselectedBackgroundColor);
+			}
+		}
 		setPaddingTop(context->paddingTop);
 		setPaddingRight(context->paddingRight);
 		setPaddingBottom(context->paddingBottom);
@@ -89,20 +90,18 @@ TextLabel::TextLabel(const String &caption, Width width, Height height, Context*
 	}
 }
 
-void TextLabel::configure() {
+void ShortLabel::configure() {
 	int stringDimensions = context->selectedFont->getStringDimensions(caption.c_str());
 	int stringWidth = EXTENT_X(stringDimensions) + paddingLeft + paddingRight;
 	int stringHeight = EXTENT_Y(stringDimensions) + paddingTop + paddingBottom;
 	int parentWidth = parent->getWidth();
 
-	if (stringWidth > parentWidth) {
-		setWidth(parentWidth);
-	} else if (width == WIDE ){
+	if (stringWidth > parentWidth || widthMode == WIDE) {
 		setWidth(parentWidth);
 	} else {
 		setWidth(stringWidth);
 	}
-	setHeight(stringHeight); // ToDo: handle multiline somehow
+	setHeight(stringHeight);
 }
 
 PopUp::PopUp(Widget* parent, const String& titleCaption, const String& caption, int keyCode, int numButtons, String* buttonCaptions)
